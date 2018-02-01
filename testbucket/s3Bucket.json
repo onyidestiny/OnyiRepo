@@ -1,5 +1,5 @@
 {
-  "Description": "AWS IAM Role with S3 Bucket Policies\n",
+  "Description": "AWS IAM Role with S3 Bucket Policies",
   "Resources": {
     "IamRole1": {
       "Type": "AWS::IAM::Role",
@@ -15,12 +15,12 @@
                 ]
               },
               "Action": [
-                "s3:*"
-              ],
-              "Resource": "arn:aws:s3:::S3Bucket/*"
+                "sts:AssumeRole"
+              ]
             }
           ]
-        }
+        },
+        "Path": "/"
       }
     },
     "IamRole2": {
@@ -37,56 +37,58 @@
                 ]
               },
               "Action": [
-                "s3:GetObject s3:PutObject"
+                "sts:AssumeRole"
               ]
             }
           ]
         },
-        "Resource": "arn:aws:s3::S3Bucket"
+        "Path": "/"
       }
     },
     "S3Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "AccessControl": "String"
+        "AccessControl": "BucketOwnerFullControl",
+        "BucketName": "S3Bucket"
       },
-      "BucketName": "S3Bucket",
       "DeletionPolicy": "Retain"
     },
     "BucketPolicy": {
       "Type": "AWS::S3::BucketPolicy",
       "Properties": {
         "PolicyDocument": {
-          "Id": "BucketPolicy",
+          "BucketName": "S3Bucket",
           "Version": "2012-10-17",
           "Statement": [
             {
-              "Sid": [
-                "PublicReadForGetBucketObjects, PublicWriteForPutObjects"
-              ],
               "Effect": "Allow",
-              "Principal": "*",
               "Action": [
-                "s3:GetObject",
-                "s3:PutObject"
+                "s3:*"
               ],
               "Resource": [
-                "",
-                [
-                  "arn:aws:s3:::",
-                  "S3Bucket !Ref IamRole1 !Ref IamRole2",
-                  "/*"
-                ]
+                "arn:aws:s3:::S3Bucket/*",
+                "arn:aws:IAM:::IamRole1"
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:PutObject",
+                "s3:GetObject"
+              ],
+              "Resource": [
+                "arn:aws:s3:::S3Bucket/*",
+                "arn:aws:IAM:::IamRole2"
               ]
             }
           ]
         },
-        "Bucket": "S3Bucket"
-      },
-      "Roles": [
-        "IamRole1",
-        "IamRole2"
-      ]
+        "PolicyName": "BucketPolicy",
+        "Roles": [
+          "IamRole1",
+          "IamRole2"
+        ]
+      }
     }
   },
   "Outputs": {
@@ -105,7 +107,6 @@
     "BucketPolicy": {
       "Description": "S3 Bucket Polices",
       "Value": "BucketPolicy"
-    },
-    "Description": "Name of S3 bucket to hold website content"
+    }
   }
 }
