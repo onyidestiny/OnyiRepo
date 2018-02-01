@@ -1,0 +1,78 @@
+Description: >
+  AWS IAM Role with S3 Bucket Policies
+Resources:
+  IamRole1:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - s3.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+   
+  IamRole2:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - s3.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      AccessControl: BucketOwnerFullControl
+      BucketName: S3Bucket
+    DeletionPolicy: Retain
+  BucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      PolicyDocument:
+        BucketName: !Ref S3Bucket
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - s3:*
+          Resource:
+          - arn:aws:s3:::S3Bucket/*
+          - arn:aws:IAM:::IamRole1
+        - Effect: Allow
+          Action:
+          - s3:PutObject
+          - s3:GetObject
+          Resource:
+          - arn:aws:s3:::S3Bucket/*
+          - arn:aws:IAM:::IamRole2
+      
+      PolicyName: BucketPolicy
+      Roles: 
+      - !Ref IamRole1
+      - !Ref IamRole2
+Outputs:
+  S3Bucket:
+    Description: S3 bucket Name
+    Value:
+      !Ref S3Bucket
+  IamRole1:
+    Description: Iam Role to manage S3 Bucket
+    Value:
+      !Ref IamRole1 
+  IamRole2:
+    Description: Iam Role to access Read and Write in the Bucket
+    Value:
+      !Ref IamRole2
+  BucketPolicy:
+    Description: S3 Bucket Polices
+    Value:
+      !Ref BucketPolicy
