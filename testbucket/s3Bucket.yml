@@ -43,22 +43,21 @@ Resources:
         Statement:
         - Effect: Allow
           Action:
-          - s3:*
+          - s3:GetObject
           Resource:
           - arn:aws:s3:::S3Bucket/*
-          - arn:aws:IAM:::IamRole1
+          - arn:aws:iam:::IamRole1/S3Access
+          Principal:
+            AWS: "*"
         - Effect: Allow
           Action:
           - s3:PutObject
           - s3:GetObject
           Resource:
           - arn:aws:s3:::S3Bucket/*
-          - arn:aws:IAM:::IamRole2
-      
-      PolicyName: BucketPolicy
-      Roles: 
-      - !Ref IamRole1
-      - !Ref IamRole2
+          - arn:aws:iam:::IamRole2/S3Access
+          Principal:
+            AWS: "*"
 Outputs:
   S3Bucket:
     Description: S3 bucket Name
