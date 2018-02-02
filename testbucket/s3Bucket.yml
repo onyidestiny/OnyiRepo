@@ -28,18 +28,18 @@ Resources:
           Action:
           - sts:AssumeRole
       Path: "/"
-  onyis3bucket101:
+  S3bucket:
     Type: 'AWS::S3::Bucket'
     Properties:
       AccessControl: BucketOwnerFullControl
-      BucketName: onyis3bucket101
+      BucketName: S3bucket
     DeletionPolicy: Retain
   BucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:
       Bucket: string
       PolicyDocument:
-        BucketName: !Ref onyis3bucket101
+        BucketName: !Ref S3bucket
         Version: '2012-10-17'
         Statement:
         - Sid: AddPerm
@@ -47,7 +47,7 @@ Resources:
           Action:
           - s3:GetObject
           Resource:
-          - arn:aws:s3:::onyis3bucket101/*
+          - arn:aws:s3:::S3bucket/*
           - arn:aws:iam:::IamRole1/S3Access
           Principal: "*"
           
@@ -57,7 +57,7 @@ Resources:
           - s3:PutObject
           - s3:GetObject
           Resource:
-          - arn:aws:s3:::onyis3bucket101/*
+          - arn:aws:s3:::S3bucket/*
           - arn:aws:iam:::IamRole2/S3Access
           Principal: "*"
           Condition: 
@@ -65,7 +65,7 @@ Outputs:
   S3Bucket:
     Description: S3 bucket Name
     Value:
-      !Ref onyis3bucket101
+      !Ref S3bucket
   IamRole1:
     Description: Iam Role to manage S3 Bucket
     Value:
