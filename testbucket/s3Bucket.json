@@ -1,5 +1,5 @@
 {
-  "Description": "AWS IAM Role with S3 Bucket Policies\n",
+  "Description": "AWS IAM Role with S3 Bucket Policies",
   "Resources": {
     "IamRole1": {
       "Type": "AWS::IAM::Role",
